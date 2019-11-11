@@ -19,10 +19,10 @@ import naive_bayes as bae
 from time import time
 
 
-def test_network(training_file, testing_file):  # function for neatness
+def test_network(training_file, testing_file, verbose=False):  # function for neatness
     print(f"Beginning training and testing of {training_file} and {testing_file}...")
     start = time()
-    bae.naive_bayes(training_file, testing_file)
+    bae.naive_bayes(training_file, testing_file, verbose)
     end = time()
     test_time = end - start
     print(f'...ending training and testing of {training_file} and {testing_file}, process completed'
@@ -30,8 +30,9 @@ def test_network(training_file, testing_file):  # function for neatness
     return test_time
 
 
-total_time = test_network("datasets/spect-orig.train.csv", "datasets/spect-orig.test.csv")
-# total_time += test_network("datasets/satellite_training.txt", "UCI_datasets/satellite_test.txt")
-# total_time += test_network("datasets/yeast_training.txt", "UCI_datasets/yeast_test.txt")
+total_time = test_network("datasets/spect-orig.train.csv", "datasets/spect-orig.test.csv", False)
+total_time += test_network("datasets/spect-itg.train.csv", "datasets/spect-itg.test.csv", False)
+total_time += test_network("datasets/spect-resplit.train.csv", "datasets/spect-resplit.test.csv", False)
+total_time += test_network("datasets/spect-resplit-itg.train.csv", "datasets/spect-resplit-itg.test.csv", False)
 
 print(f'All tests completed in {helper.translate_seconds(total_time)}.\n')

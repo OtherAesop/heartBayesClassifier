@@ -37,11 +37,12 @@ def summarize(data_summary):  # For summarizing the data summary
     return class_sum
 
 
-def print_training_summary(class_summary):
-    for x in class_summary:
-        for attribute in range(len(class_summary[x][0])):  # iterate as long as there are elements in 'mean' element
-            print(f'Class {x}, Attribute {attribute}, Mean = {class_summary[x][0][attribute]:.2f},'
-                  f' Std = {class_summary[x][1][attribute]:.2f}')
+def print_training_summary(class_summary, verbose=False):
+    if verbose:
+        for x in class_summary:
+            for attribute in range(len(class_summary[x][0])):  # iterate as long as there are elements in 'mean' element
+                print(f'Class {x}, Attribute {attribute}, Mean = {class_summary[x][0][attribute]:.2f},'
+                      f' Std = {class_summary[x][1][attribute]:.2f}')
 
 
 # http://mathworld.wolfram.com/NormalDistribution.html
