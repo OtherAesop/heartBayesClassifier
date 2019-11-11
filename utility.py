@@ -86,30 +86,49 @@ def predict_classes(class_sum, test_inputs):
 
 
 # Note that ordering accuracy here is dependant on prediction_set and label_set's ordering not being changed before
-def print_test_summary(prediction_set, label_set):  # Summarizes testing results
+def print_test_summary(prediction_set, label_set, verbose=False):  # Summarizes testing results
     counter = 0
     accurate_predictions = 0
+    rating = 0
+    tp, fp, tn, fn = 0, 0, 0, 0
+    prediction_class = 0
+
     for prediction in prediction_set:
         if len(prediction[0]) > 2:  # There are ties, this works because a no-tie array has 2 elements and a tie is more
             prediction_index = random.randint(len(prediction[0][0])+1, size=1)  # random index within prediction set
             predicted_class = prediction[0][prediction_index]  # randomly pick the prediction, A+++ computer science
             if predicted_class == label_set[counter]: acc_rating_ties = (1/len(prediction[0][0]))  # 1 / guesses
             else: acc_rating_ties = 0.0
-            print(f"Object ID: {counter+1}, Predicted Class: {predicted_class}, "
-                  f"Probability of Prediction: {float(format(*prediction[0][1]))}, True Class: {label_set[counter]}, "
-                  f"Accuracy: {acc_rating_ties}.\n")
+            prediction_class = predicted_class
             accurate_predictions += acc_rating_ties  # update accuracy accumulator
+            rating = acc_rating_ties
         else:  # There are no ties
             curr_prediction = float(format(*prediction[0][0]))
             if curr_prediction == label_set[counter]: acc_rating = 1
             else: acc_rating = 0
-            print(counter+1)
-            print(f"Object ID: {counter+1}, Predicted Class: {curr_prediction}, "
-                  f"Probability of Prediction: {float(format(*prediction[0][1]))}, True Class: {label_set[counter]}, "
-                  f"Accuracy: {acc_rating}.\n {counter+1}")
+            prediction_class = curr_prediction
             accurate_predictions += acc_rating
+            rating = acc_rating
+
+        if verbose:
+            print(f"Object ID: {counter+1}, Predicted Class: {prediction_class}, "
+                  f"Probability of Prediction: {float(format(*prediction[0][1]))}, True Class: {label_set[counter]}, "
+                  f"Accuracy: {rating}.\n")
+        if prediction_class == 1: # Note this will only be accurate for binary class problems
+            if prediction_class == label_set[counter]:
+                tp += 1
+            else:
+                fp += 1
+        elif prediction_class == 0:
+            if prediction_class == label_set[counter]:
+                tn += 1
+            else:
+                fn += 1
         counter += 1
-    print(f"Classification accuracy={(float(accurate_predictions) / float(counter) * 100):6.4f}%.\n")
+    print(f"True Positives = {tp}, False Positives = {fp}, True Negatives = {tn}, False Negatives = {fn}\n"
+          f"Precision= {tp}/{tp+fp}, {(float(tp) / float(tp + fp) * 100):6.1f}%.\n"
+          f"Recall= {tp}/{tp+fn}, {(float(tp) / float(tp + fn) * 100):6.1f}%.\n"
+          f"FP Rate= {fp}/{fp+tn}, {(float(fp) / float(fp + tn) * 100):6.1f}%.\n")
 
 
 def translate_seconds(seconds):  # gives HH:MM:SS as str
@@ -128,7 +147,7 @@ def make_datasets(filepath):  # Separates labels and preps data sets
         raw_data = reader(data_file, delimiter=',')  # Read in all data, includes empty spaces
         for row in raw_data:
             row[:] = (val for val in row if val != '')  # removes all empty elements created by reader
-            label_set.append(row.pop())  # remove last element which is label and put in labelset
+            label_set.append(row.pop(0))  # remove last element which is label and put in labelset
             data_set.append(row)
     data_file.close()
     return data_set, label_set
