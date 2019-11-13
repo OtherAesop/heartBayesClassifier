@@ -148,7 +148,7 @@ def make_datasets(filepath):  # Separates labels and preps data sets
         raw_data = reader(data_file, delimiter=',')  # Read in all data, includes empty spaces
         for row in raw_data:
             row[:] = (val for val in row if val != '')  # removes all empty elements created by reader
-            label_set.append(row.pop(0))  # remove last element which is label and put in labelset
+            label_set.append(row.pop(0))  # remove first element which is label and put in labelset
             data_set.append(row)
     data_file.close()
     return data_set, label_set
@@ -156,7 +156,10 @@ def make_datasets(filepath):  # Separates labels and preps data sets
 
 def map_classes(data_set, label_set):  # takes a dataset and a corresponding labelset and summarizes
     data_sum = dict()
-    for _ in data_set:  # Iterate through list and remove and summarize data
+    if len(data_set) != len(label_set): # Shoot warning if user passes mismatching elements
+        print("ERROR: Mismatching label and attribute sets")
+
+    for _ in range(len(data_set)):  # Iterate through list and remove and summarize data
         if label_set[0] not in data_sum.keys():  # Key does not exist, make new list
             x = label_set.pop(0)  # doing it this way guarantees everything is added into the dictionary as a list...
             data_sum[x] = []      # ...and keeps the summary neat and uniform
