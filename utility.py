@@ -129,7 +129,8 @@ def print_test_summary(prediction_set, label_set, verbose=False):  # Summarizes 
     print(f"True Positives = {tp}, False Positives = {fp}, True Negatives = {tn}, False Negatives = {fn}\n"
           f"Precision= {tp}/{tp+fp}, {(float(tp) / float(tp + fp) * 100):6.1f}%.\n"
           f"Recall= {tp}/{tp+fn}, {(float(tp) / float(tp + fn) * 100):6.1f}%.\n"
-          f"FP Rate= {fp}/{fp+tn}, {(float(fp) / float(fp + tn) * 100):6.1f}%.\n")
+          f"FP Rate= {fp}/{fp+tn}, {(float(fp) / float(fp + tn) * 100):6.1f}%.\n"
+          f"Accuracy (human version)= {accurate_predictions}/{counter}, {((float(accurate_predictions) / float(counter)) * 100):6.1f}%.\n")
 
 
 def translate_seconds(seconds):  # gives HH:MM:SS as str
