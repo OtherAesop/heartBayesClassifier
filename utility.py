@@ -115,12 +115,12 @@ def print_test_summary(prediction_set, label_set, verbose=False):  # Summarizes 
             print(f"Object ID: {counter+1}, Predicted Class: {prediction_class}, "
                   f"Probability of Prediction: {float(format(*prediction[0][1]))}, True Class: {label_set[counter]}, "
                   f"Accuracy: {rating}.\n")
-        if prediction_class == 1: # Note this will only be accurate for binary class problems
+        if prediction_class == 1.0: # Note this will only be accurate for binary class problems
             if prediction_class == label_set[counter]:
                 tp += 1
             else:
                 fp += 1
-        elif prediction_class == 0:
+        elif prediction_class == 0.0:
             if prediction_class == label_set[counter]:
                 tn += 1
             else:
@@ -130,7 +130,7 @@ def print_test_summary(prediction_set, label_set, verbose=False):  # Summarizes 
           f"Precision= {tp}/{tp+fp}, {(float(tp) / float(tp + fp) * 100):6.1f}%.\n"
           f"Recall= {tp}/{tp+fn}, {(float(tp) / float(tp + fn) * 100):6.1f}%.\n"
           f"FP Rate= {fp}/{fp+tn}, {(float(fp) / float(fp + tn) * 100):6.1f}%.\n"
-          f"Accuracy (human version)= {accurate_predictions}/{counter}, {((float(accurate_predictions) / float(counter)) * 100):6.1f}%.\n")
+          f"Accuracy= {tp+tn}/{tp+tn+fp+fn}, {((float(tp+tn) / float(tp+tn+fp+fn)) * 100):6.1f}%.\n")
 
 
 def translate_seconds(seconds):  # gives HH:MM:SS as str
