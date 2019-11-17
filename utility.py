@@ -47,16 +47,29 @@ def print_training_summary(class_summary, verbose=False):
 
 # http://mathworld.wolfram.com/NormalDistribution.html
 def calc_prob_x(x, class_mean, class_std):  # Probability that x belongs to the class of the mean and std values
-    return (exp((-1 * pow(x - class_mean, 2)) / (2 * pow(class_std, 2)))) / (class_std * sqrt(2*pi))
+    std = class_std / (class_std - 1)  # bessel's correction?
+    x =  (exp((-1 * pow(x - class_mean, 2)) / (2 * pow(std, 2)))) / (std * sqrt(2*pi))
+    print(x)
+    return x
 
 
 def calc_class_probs(class_sum, input_object):  # Calcs probability that input_object belongs to each class
     probabilities = dict()
+    prob_x = dict()
+
+    # We need to calculate P(x) in advance
+    for c_key in class_sum:
+        if c_key not in prob_x:
+            prob_x[c_key] = 1
+        else:
+            prob_x[c_key] += 1
 
     for class_key in class_sum:  # Total probability that input_object belongs to each class_key
-        probabilities[class_key] = 1
+        probabilities[class_key] = prob_x[class_key] / len(prob_x)  # P(x)
         for i in range(len(input_object)):  # Total probability that input_object belongs to class_sum[class_key]
             probabilities[class_key] *= calc_prob_x(input_object[i], class_sum[class_key][0][i], class_sum[class_key][1][i])
+            # probabilities[class_key] = log(probabilities[class_key])
+            #print(probabilities[class_key])
     return probabilities
 
 
@@ -157,7 +170,7 @@ def make_datasets(filepath):  # Separates labels and preps data sets
 
 def map_classes(data_set, label_set):  # takes a dataset and a corresponding labelset and summarizes
     data_sum = dict()
-    if len(data_set) != len(label_set): # Shoot warning if user passes mismatching elements
+    if len(data_set) != len(label_set):  # Shoot warning if user passes mismatching elements
         print("ERROR: Mismatching label and attribute sets")
 
     for _ in range(len(data_set)):  # Iterate through list and remove and summarize data
