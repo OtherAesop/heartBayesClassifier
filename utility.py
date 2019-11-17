@@ -29,7 +29,7 @@ def summarize(data_summary):  # For summarizing the data summary
 
     for class_key in sorted_sum:  # iterates through class_keys from smallest to largest
         c_key_mean = list(mean(asarray(data_summary[class_key]).astype(float), axis=0))
-        c_key_std = list(std(asarray(data_summary[class_key]).astype(float), axis=0))
+        c_key_std = list(std(asarray(data_summary[class_key]).astype(float), axis=0, ddof=1))  # Bessel's Correction
         for elem in range(len(c_key_std)):  # Check for underflow
             if c_key_std[elem] < .01: c_key_std[elem] = .01
         class_sum[class_key] = [c_key_mean, c_key_std]
@@ -47,10 +47,7 @@ def print_training_summary(class_summary, verbose=False):
 
 # http://mathworld.wolfram.com/NormalDistribution.html
 def calc_prob_x(x, class_mean, class_std):  # Probability that x belongs to the class of the mean and std values
-    std = class_std / (class_std - 1)  # bessel's correction?
-    x =  (exp((-1 * pow(x - class_mean, 2)) / (2 * pow(std, 2)))) / (std * sqrt(2*pi))
-    print(x)
-    return x
+    return (exp((-1 * pow(x - class_mean, 2)) / (2 * pow(class_std, 2)))) / (class_std * sqrt(2*pi))
 
 
 def calc_class_probs(class_sum, input_object):  # Calcs probability that input_object belongs to each class
@@ -67,9 +64,8 @@ def calc_class_probs(class_sum, input_object):  # Calcs probability that input_o
     for class_key in class_sum:  # Total probability that input_object belongs to each class_key
         probabilities[class_key] = prob_x[class_key] / len(prob_x)  # P(x)
         for i in range(len(input_object)):  # Total probability that input_object belongs to class_sum[class_key]
-            probabilities[class_key] *= calc_prob_x(input_object[i], class_sum[class_key][0][i], class_sum[class_key][1][i])
-            # probabilities[class_key] = log(probabilities[class_key])
-            #print(probabilities[class_key])
+            cond_sum = calc_prob_x(input_object[i], class_sum[class_key][0][i], class_sum[class_key][1][i])
+            probabilities[class_key] = probabilities[class_key] * cond_sum  # P(x)∏ P(x | class)
     return probabilities
 
 
